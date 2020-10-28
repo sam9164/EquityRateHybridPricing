@@ -1,0 +1,849 @@
+
+\documentclass[11pt]{article}
+\setlength{\parskip}{\baselineskip}%
+
+
+    \usepackage[T1]{fontenc}
+    % Nicer default font (+ math font) than Computer Modern for most use cases
+    \usepackage{mathpazo}
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % We will generate all images so they have a width \maxwidth. This means
+    % that they will get their normal width if they fit onto the page, but
+    % are scaled down if they would overflow the margins.
+    \makeatletter
+    \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth
+    \else\Gin@nat@width\fi}
+    \makeatother
+    \let\Oldincludegraphics\includegraphics
+    % Set max figure width to be 80% of text width, for now hardcoded.
+    \renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=.8\maxwidth]{#1}}
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+%    \DeclareCaptionLabelFormat{nolabel}{}
+%    \captionsetup{labelformat=nolabel}
+
+    \usepackage{adjustbox} % Used to constrain images to a maximum size
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+        \numberwithin{equation}{section}
+    \usepackage{amssymb} % Equations
+        \DeclareMathOperator*{\E}{\mathbb{E}}
+        \DeclareMathOperator*{\Var}{\mathbb{V}ar}
+        \DeclareMathOperator*{\Cov}{\mathbb{C}ov}
+        \DeclareMathOperator*{\Prob}{\mathbb{P}}
+    \usepackage{amsthm}
+        \theoremstyle{remark}
+        \newtheorem*{remark}{Remark}
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage[utf8x]{inputenc} % Allow utf-8 characters in the tex document
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{physics} % differential
+    \usepackage{mathtools} %:=
+    \usepackage{float}
+    \usepackage{verbatim}
+    \usepackage{enumitem} % Label of enumeration
+    \usepackage{xfrac} % fraction
+    \usepackage{tikz} % diagrams
+        \usetikzlibrary{automata, arrows, positioning}
+        \tikzset{every node/.style={align=left}}
+    \usepackage{appendix} % appendix
+    \usepackage{booktabs} % table
+    \usepackage{multirow}
+    \usepackage{extarrows}
+
+    \usepackage{titlesec}
+    \setcounter{secnumdepth}{4}
+    \titleformat{\paragraph}
+    {\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+    \titlespacing*{\paragraph}
+    {0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \setlength\parindent{0pt}
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatability definitions
+    \def\gt{>}
+    \def\lt{<}
+    % Hessian
+    \DeclareMathOperator{\Hessian}{Hess}
+    % Document parameters
+    \title{IEOR E4735: Final Report}
+    \author{
+    Yang, Sen\\
+    \texttt{sy2805}
+    \and
+    Wang, Weimin\\
+    \texttt{ww2504}
+    \and
+    Ji, Wenyi\\
+    \texttt{wj2288}
+    }
+    \date{}
+
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\expandafter\def\csname PY@tok@w\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PY@tok@c\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\expandafter\def\csname PY@tok@k\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\expandafter\def\csname PY@tok@o\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ow\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@ne\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\expandafter\def\csname PY@tok@nv\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@no\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ni\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\expandafter\def\csname PY@tok@na\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\expandafter\def\csname PY@tok@nt\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@s\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sd\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@si\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@se\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sr\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@ss\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sx\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@m\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@gh\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gu\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gr\endcsname{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ge\endcsname{\let\PY@it=\textit}
+\expandafter\def\csname PY@tok@gs\endcsname{\let\PY@bf=\textbf}
+\expandafter\def\csname PY@tok@gp\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@go\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\expandafter\def\csname PY@tok@gt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PY@tok@err\endcsname{\def\PY@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PY@tok@kc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kd\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@fm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sa\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@dl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@mb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ch\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cpf\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % Exact colors from NB
+    \definecolor{incolor}{rgb}{0.0, 0.0, 0.5}
+    \definecolor{outcolor}{rgb}{0.545, 0.0, 0.0}
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+
+
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}\label{S1}
+We are going to price the following contract who will pay at maturity $T$ in USD with the payoff of the form
+$$\max\left[0,\left(\frac{S(T)}{S(0)}-k\right)\left(\frac{L(T-\Delta,T-\Delta,T)}{L(0,T-\Delta,T)}-k^\prime\right)\right]$$
+
+where we have used the following notation
+\begin{itemize}
+\item $S(t)$: the stock price of STOXX50E quantoed from EUR into USD
+\item $L(t, T-\Delta, T)$: the time-$t$ price of USD LIBOR rate with tenor $\Delta$
+\item $T$: the expiration date
+\item $k, k^\prime$ the relative strike prices for equity and rate, respectively
+\end{itemize}
+
+\section{Model Assumption}\label{2}
+\subsection{Interest Rate Term Structure}\label{2.1}
+Assume the domestic short-rate follows a Hull-White model with the dynamics under domestic risk neutral measure $\mathbb{Q}$ :
+
+$$ \dd r_t = \left(\theta(t)-\alpha r_t \right) \dd t + \sigma \dd W_t^2 $$
+where we assumed a constant mean-reversion speed $\alpha$, time-dependent mean-reversion level $\theta(t)$, and constant Hull-White volatility $\sigma$. The parameter setting will be further discussed in \ref{3.3}. $W_t^2$ denotes the second Brownian motion under $\mathbb{Q}$, whereas $W_t^1$ and $W_t^3$ will be discussed in \ref{2.3}.
+
+\subsection{Equity}\label{2.2}
+Assume the foreign stock $S$ follows a local volatility model with the dynamics under the foreign risk-neutral measure $\mathbb{Q}^f$:
+
+$$ \dd{S_t} = r_t^f S_t \dd t + \sigma(t, S_t)S_t \dd W_t^{1,f}$$
+
+where we assume a constant foreign interest rate $r_t^f:=r^f$, and $W^{1,f}$ denotes the corresponding foreign Brownian motion discussed in \ref{2.3}. We will use the SSVI to fit the market volatility surface, and then the local volatility function $\sigma\left(t,S_t\right)$ can then be derived from the surface parameterization, which will be discussed in \ref{3.4} and \ref{3.5}.
+
+\subsection{FX and Quanto}\label{2.3}
+
+Here, we will convert the foreign equity model from foreign risk neutral measure $\mathbb{Q}^f$ to domestic risk neutral measure $\mathbb{Q}$. We have under $\mathbb{Q}^f$, the foreign exchange rate $X$ follows the dynamics
+$$ \dd X = X \left(r(t)-r_f \right) \dd t + X \sigma_X \left( \rho_X \dd W_t^{f,1}+\sqrt{1-\rho_X^2} \dd W_t^{f,3} \right)$$
+
+where we have the following relationship for $\mathbb{Q}$-BMs and $\mathbb{Q}^f$-BMs with Girsanov's theorem:
+
+$$
+\left\{
+\begin{array}{ll}
+W_t^{f,1} & = W_t^1 - \int_0^t \sigma_X \rho_X ds \\
+W_t^{f,3} & = W_t^3 - \int_0^t \sigma_X \sqrt{1-\rho_X^2} ds
+\end{array}
+\right.
+$$
+
+Here we assume a constant correlation between the foreign equity $S$ and foreign exchange rate $X$, denoted as $\rho_X$, and a constant volatility for exchange rate $X$ denoted as $\sigma_X$. According to the empirical evidence discussed in \ref{4.1}, we assume no correlation between foreign exchange rate and domestic short-rate, and thus $X$ takes no $W^2$ in its dynamics.
+
+With the help of this relationship, we can write down the dynamics of the quantoed foreign equity price $S$ under $\mathbb{Q}$ as
+
+$$ \dd S_t = \left( r_t^f - \rho_X \sigma_X \sigma(t,S_t) \right) S_t \dd t + \sigma(t,S_t) S_t \dd W_t^1$$
+
+It is then clear to see that the quantoed equity corresponds just with the first $\mathbb{Q}$-BM $W^1$.
+
+\subsection{Joint Dynamics}\label{2.4}
+\subsubsection{Risk Neutral Measure}\label{2.4.1}
+The joint dynamics for quantoed equity and short-rate under $\mathbb{Q}$ are
+$$
+\left\{
+\begin{array}{ll}
+    \dd S_t & = \left( r_t^f - \rho_X \sigma_X \sigma(t,S_t) \right) S_t \dd t + \sigma(t,S_t) S_t \dd W_t^1\\
+    \dd r_t & = \left(\theta(t)-\alpha r_t \right) \dd t + \sigma \dd W_t^2\\
+\end{array}
+\right.
+$$
+where $W^2$ and $W^1$ are two correlated Brownian motion with correlation parameter $\rho$:
+$$\dd W_t^1 \dd W_t^2 = \rho \dd t$$
+
+\subsubsection{Forward Measure}\label{2.4.2}
+We give explicitly the joint dynamics under $T$-forward measure $\mathbb{Q}^T$, where $\mathbb{Q}^T$ is defined with the zero coupon bond price as numeraire and density with regard to the risk neutral measure $\mathbb{Q}$
+$$\frac{\dd\mathbb{Q}_T}{\dd\mathbb{Q}} := \frac{d(0,T)}{B(0,T)} = \text{exp}\left\{\int_0^Tb(t,T) \dd W_t^2 -\frac{1}{2}\int_0^T\lVert b(t,T)\rVert^2 \dd t \right\}\\$$
+where $b(t, T)$ is the time-$t$ zero coupon bond volatility with maturity $T$, and can be derived explicitly under Hull-White rate model as
+$$b(t,T) = -\sigma\frac{1-e^{-\alpha(T-t)}}{\alpha}$$
+
+Thanks to Girsanov's theorem, the relationship between $T$-forward Brownian motion and domestic risk neutral Brownian motion can be written as
+$$
+\left\{
+\begin{array}{ll}
+    W_t^{T,1} &= W_t^1 - \int_0^t \rho b(s,T) \dd s\\
+    W_t^{T,2} &= W_t^2 - \int_0^t b(s,T) \dd s
+\end{array}
+\right.
+$$
+
+Under $T$-forward measure $\mathbb{Q}^T$, the joint dynamics of the quantoed equity and domestic short-rate are
+$$
+\left\{
+\begin{array}{ll}
+    \dd S_t & = \left( r_t^f - \rho_X \sigma_X \sigma(t,S_t) + \rho b(t,T) \sigma(t,S_t) \right) S_t \dd t + \sigma(t,S_t) S_t \dd W_t^{T,1}\\
+    \dd r_t & = \left(\theta(t) + \rho \sigma b(t,T) -\alpha r_t \right) \dd t + \sigma \dd W_t^{T,2}\\
+\end{array}
+\right.
+$$
+
+\section{Model Calibration}\label{3}
+\subsection{Data Preparation}\label{3.1}
+
+To price the contract, we have utlizied the following data at date November 15, 2019.
+
+\begin{itemize}
+\item Yield Curve with Tenor $1M, 2M, 3M, 5M, 1Y, 2Y, 3Y, 5Y, 7Y, 10Y, 30Y$
+\item Bid/Mid/Ask Volatility Surface with Tenor $\frac{1}{12}, \frac{1}{6}, \frac{1}{4}, \frac{1}{2}, 1, \frac{3}{2}, 2$
+\item Implied Forward equity price with Tenor $1M,2M,3M,6M,1Y,1.5Y,2Y$ and Moneyness: $0.8, 0.85, 0.9, 0.95, 0.975, 1, 1.025, 1.05, 1.1, 1.15, 1.2., 35.87, 1.57$
+\item At-the-money Caplet Strike and Volatility with 1-year expiration
+\item Spot Price of Euro Stoxx 50 (STOXX50E)
+\item 3 Month US Dollar LIBOR interest rate (US0003M)
+\item Euro to US Dollar Exchange Rate (USDEUR)
+\end{itemize}
+
+\subsection{Yield Curve Calibration}\label{3.2}
+The yield curve can be constructed at time 0 with discrete data of the non-negative graph of the map: $T \mapsto r(0, T)$, corresponding to continuously-compounded spot rates. Here we assumed a simple day-count convention $\tau(t, T) = T-t$.
+
+It will also give a deterministic term structure of discount factors (zero-coupon bond price) with maturity $T$ with the map $T \mapsto B(0, T)$ as
+$$B(0, T) = e^{- r(0, T) T} $$
+
+the continuously-compounding forward rate with different maturities $0 \leq T_1 \leq T_2$ with the map $ (T_1, T_2) \mapsto f(0, T_1, T_2)$ as
+$$f(0,T_1,T_2) = \frac{1}{T_2-T_1} \log \left(\frac{B(0,T_1)}{B(0,T_2)}\right)$$
+
+and the corresponding simply-compounding forward rate $L(0, T_1, T_2)$, which is exactly the same as the forward LIBOR rate with maturity $T_1$ and tenor $T_2-T_1$ as
+$$L(0,T_1,T_2) = \frac{1}{T_2-T_1}\frac{B(0,T_1)-B(0,T_2)}{B(0,T_2)}$$
+
+The instantaneous forward rate with maturity T, $f(0, T)$, where we abused the notation $f(0, T) := lim_{T' \to T} f(0,T,T')$, can be computed through the derivative operator
+$$f(0,T)= -\pdv{\log B(0, T)}{T} $$
+
+We explicitly gives the map the derivative of instantaneous forward rate with regard to the maturity $T$, $f_T(0, T)$, which will be used in the Hull-While model calibration \ref{3.3}
+$$f_T(0,T)= -\pdv{f(0, T)}{T} $$
+
+Here we use \textit{monotonic cubic spline interpolation on log-discounts} to construct the yield curve. This choice of interpolation preserves monotonicity of the data set being interpolated and ensure the existence of the first and the second derivative. Past research and empirical evidence also reveal that monotonic spline interpolation on log-discounts appear to be a better approach than other approaches (e.g. piecewise linear fit, interpolation on rate itself).
+
+We transform discrete continuously-compounded zero rate data $r(0, T_i)$ into log-discount $\log B(0, T_i)$ for all tenors observed in the market, and interpolate $y_i$ with regard to $T_i$. After interpolation and extrapolation the log-discount will be available for all tenor $T > 0$. We can then use the formula provided above to compute these value.
+
+The yield curve object is involved in the other models and will be discussed afterwards.
+
+\subsection{Hull-White Model Calibration}\label{3.3}
+\subsubsection{Mean-Reversion Speed $\alpha$}\label{3.3.1}
+The mean-reversion speed parameter $\alpha$ is set to be a plausible constant calculated from historical data. According to lots of literatures, it is said that $\alpha$ will not change a lot over time and is not sensitive to the model.
+
+\subsubsection{Mean-Reversion Level $\theta(t)$}\label{3.3.2}
+$\theta(t)$ is chosen to fit the theoretical instantaneous forward rate curve $T \mapsto f(0,T)$ generated from the model to the observed curve $T \mapsto f^M(0,T)$ using an affine structure. The observed curve is derived from the constructed yield curve mentioned in \ref{3.2}. After derivation, we have
+
+$$ \theta(T) = \alpha f^M(0,T) + \pdv{f^M(0, T)}{T} + \frac{\sigma^2}{2\alpha}(1-e^{- 2\alpha T}) $$
+
+Then the yield curve generated from the model will match with the initial yield curve.
+
+\subsubsection{Hull-White Volatility}\label{3.3.3}
+Since we have the data of caplet/floorlet volatility, we need to derive the Hull-White volatility $\sigma$ from caplet/floorlet volatility $vol$. Given caplet/floorlet implied black volatility with tenor $T_2-T_1$, maturity $T_2$ and strike $K$, denoted as $\sigma_C(T_1, T_2, K)$ and in short $\sigma_C$, we can get the corresponding caplet price with the famous Black-76 formula,
+$$Caplet(T_1, T_2, K, \sigma_C) = B(0,T_2) BS^C(K, T_1, L(0, T_1, T_2), \sigma_C, 0)$$
+
+where $BS^C$ is the Black-Scholes formula discussed in \ref{4.4.1}.
+
+As $Caplet(T_1, T_2, K, \sigma_C)$ is known, we can compute the corresponding bond option price $C^B(0,T_1,T_2,K^B)$ (since caplet is equivalent to a put option on bond) and then derive the bond volatility $\sigma^B$ using Newton's method with Black-Scholes formula
+$$C^B(T_1,T_2,K^B) = \frac{T_2-T_1}{1+K(T_2-T_1)}Caplet(T_1,T_2,K,\sigma_C) = B(0, T_1)BS^P(K_B,T_1,S_B,\sigma_B,0)$$
+where $K_B=\frac{1}{1+K(T_2-T_1)}$ and $S_B=\frac{1}{1+(T_2-T_1)L(0,T_1,T_2)}$.
+
+Then we can generate the Hull-White volatility with formula
+$$ \sigma = \sqrt{\frac{2a^3\sigma_B^2T_1}{(1-e^{-a(T_2-T_1)})^2(1-e^{-2aT_1})^2}} $$
+
+\subsection{Vol Surface Construction}\label{3.4}
+\subsubsection{SSVI Parameterization}\label{3.4.1}
+We consider the following SSVI parameterisation of the total implied variance surface:
+$$
+w(k,\theta_t)
+= \frac{\theta_t}{2}\left\{1+\rho\varphi(\theta_t) k + \sqrt{\left(\varphi(\theta_t){k}+\rho\right)^2
++1-\rho^2 }\right\}
+$$
+with $\theta_t = \sigma_{BS}(F_t, t)^2 t$ the at-the-forward-money implied total variance and $k=\log \left( \frac{K}{F_t} \right)$ the log-forward-moneyness where $K$ denotes the strike, and $F_t$ denotes the time-$t$ forward price. $\rho$ is a parameter that needs to be optimized.
+
+We first calculate $\theta_T$ for each discrete maturity $T$ in market data by interpolating the discrete implied volatility with log forward moneyness $K \mapsto \log(K/F_T) \mapsto \sigma_{BS}(K, T)$ using cubic spline, and then interpolate the discrete $T \mapsto \theta_T$ map with monotonic cubic spline to get the $\theta_t$ level for all maturity $T$ to ensure the monotonicity.
+
+The $\phi(\cdot)$ function controls the implied variance skew.
+
+For Heston-like Surface, the function $\varphi$ is defined as:
+$$ \varphi(\theta)=\frac{1}{\lambda\theta}\left\{1-\frac{1-\mathrm{e}^{-\lambda\theta}}{\lambda\theta}\right\} $$
+where $\lambda>0$ and $\rho \in (-1,1)$.
+We further need to impose $\lambda \geq \frac{1}{4}\left(1+|\rho|\right)$ in order to exclude arbitrage.
+
+For Power-Law Surface:
+$$ \varphi(\theta)=\frac{\eta}{\theta^\gamma\left(1+\theta\right)^{1-\gamma}} $$
+where $\gamma\in (0,\frac{1}{2}]$ and $\rho \in (-1,1)$.
+We further need to impose $\eta\left(1+|\rho|\right)\leq 2$ in order to exclude arbitrage.
+
+\subsubsection{Parameter Optimization}\label{3.4.2}
+In order to fit the whole surface, we first need to find the optimal parameter set $\Omega$ where $\Omega := \{\rho, \lambda\}$ for Heston-like surface and $\Omega := \{\rho, \gamma, \eta \}$ for power-law surface, which can be solved by minimizing the loss function discussed below.
+
+The basic loss function is
+$$ l(\Omega) = \frac{1}{2} \sum_{t_i}\sum_{k}\left(\sqrt{w_{t_i,k}^{SSVI}/t_i}-\sigma_{t_i,k}^{M}\right)^2 $$
+or
+$$ l(\Omega) = \frac{1}{2} \sum_{t_i}\sum_{k} \left(w_{t_i,k}^{SSVI}-\left(\sigma_{t_i,k}^{M}\right)^2t_i\right)^2$$
+
+Here we use power-law surface and the first version of loss function to do optimization with SLSQP algorithm, which can deal with linear constraints.
+
+\subsection{Local Volatility}\label{3.5}
+\subsubsection{Derivatives for Different Spreads}\label{3.5.1}
+To compute the local volatility for a given set of parameter $\Omega$ in SSVI parameterization, we first need to derive the derivatives corresponding to vanilla spread $\pdv{w(k,\theta_t)}{k}$, butterfly spread $\pdv[2]{w(k,\theta_t)}{k}$ and calender spread $\pdv{w(k,\theta_t)}{t}$.
+
+For vanilla spread and butterfly spread we have the following formulas
+$$
+\left\{
+\begin{array}{ll}
+    \pdv{w(k,\theta_t)}{k} & = \frac{\theta \varphi(\theta_t)}{2} \left( \rho + \frac{k \varphi(\theta_t) + \rho}{\sqrt{ \left( \varphi(\theta_t) k + \rho \right)^2 + \left(1-\rho^2 \right)}} \right)\\
+    \pdv[2]{w(k,\theta_t)}{k} & = \frac{\theta\varphi^2}{2}\frac{1-\rho^2}
+    {\left( \left( \varphi(\theta_t) k + \rho \right)^2 + \left(1-\rho^2 \right) \right)^{3/2}}
+\end{array}
+\right.
+$$
+
+For calendar spread, we use the chain rule to find the first derivative of the SSVI function, $w(k,\theta_t)$, with respect to $t$
+$$ \pdv{w(k,\theta_t)}{t} = \pdv{w(k, \theta_t, \varphi(\theta_t))}{\theta_t} \pdv{\theta_t}{t} + \pdv{w(k, \theta_t, \varphi(\theta_t))}{\varphi} \pdv{\varphi(\theta_t)}{\theta_t} \pdv{\theta_t}{t}$$
+where $\frac{\partial \theta_t}{\partial t}$ can be calculated by monotonic cubic spline interpolation and
+$$
+\left\{
+\begin{array}{ll}
+    \pdv{w(k, \theta_t, \varphi(\theta_t))}{\theta_t} & = \frac{w(k,\theta_t)}{\theta_t}\\
+    \pdv{w(k, \theta_t, \varphi(\theta_t))}{\varphi} & = \frac{k\theta_t}{2} \left( \rho + \frac{k \varphi(\theta_t) + \rho}{\sqrt{ \left( \varphi(\theta_t) k + \rho \right)^2 + \left(1-\rho^2 \right)}} \right)
+\end{array}
+\right.
+$$
+
+The derivatives for $\varphi(\cdot))$ function for Heston-like surface and power-law surface can be calculated as following
+$$
+\left\{
+\begin{array}{ll}
+    \pdv{\varphi^{Power}(\theta)}{\theta} & = \frac{\eta\left(\theta+\gamma\right)\left(1+\theta\right)^{\gamma-2}}{\theta^{1+\gamma}}\\
+    \pdv{\varphi^{Heston}(\theta)}{\theta} & = \frac{2-2 e^{-\lambda\theta} - \lambda \theta e^{-\lambda \theta} - \lambda \theta}{\lambda^2 \theta^3}
+\end{array}
+\right.
+$$
+
+\subsubsection{Local Variance and Local Volatility}{3.5.2}
+We can derive the Dupire-like formula for SSVI volatility surface via the following formula
+$$\sigma_{\mathrm{loc}}^2(K, T) = \frac{\partial_{t}w(k, \theta_{T})}{g(k, w(k, \theta_{T})) T}$$
+for all $x\in\mathbb{R}$ and $t\geq 0$, where the function $g(\cdot, \cdot)$ is defined as:
+$$ g(k, w(k, \theta_{t})) := \left(\left(1 - \frac{k\partial_k w(k, \theta_{t})}{w(k, \theta_{t})}\right)^2 -\frac{(\partial_k w(k, \theta_{t}))^2}{4}\left(\frac{1}{4}+\frac{1}{w(k, \theta_{t})}\right) + \frac{\partial_{k^2} w(k, \theta_{t})}{2}\right) \eval_{(k,\theta_t)}$$
+
+and the local volatility is the square root of the local variance:
+$$\sigma_{\mathrm{loc}}(K, T) = \sqrt{\sigma_{\mathrm{loc}}^2(K, T)}$$
+
+
+\subsection{Correlation}\label{3.6}
+We compute the correlations among the daily return of Euro Stoxx 50(STOXX50E), the daily difference of 3 Month US Dollar LIBOR interest rate (US0003M), and the daily return of Euro to US Dollar Exchange Rate(USDEUR) in November 15, 2019 and assume them to be constant.
+
+The corresponding correlation between STOXX50E and US0003M, denoted as $\rho$, will be utilized for the models in \ref{2.4}. The other correlation parameter between STOXX50E and USDEUR, denoted as $\rho_X$, will be used in \ref{2.3} and \ref{2.4}. The third correlation between USDEUR and US0003M is essentially very near zero and can be ignored, which supports our assumption in \ref{2.3}.
+
+\section{Implementation}\label{4}
+\subsection{Market Bundle}\label{4.1}
+We have mainly established three abstract base classes that contain member functions related to various market object.
+
+\begin{itemize}
+\item \textbf{Yield Term Structure}
+
+It takes discrete market rates data to initialize, and has member functions to compute for all tenor the corresponding discount factor, zero rate, forward rate, instantaneous forward rate, etc. Two classes, flat yield curve and interpolated yield curve, are inherited from this class.
+
+\item \textbf{Volatility Term Structure}
+
+It takes discrete market implied volatility to initialize, and can output implied volatility and local volatility for all expirations and all strikes. Two classes, flat volatility surface and SSVI volatility surface, are inherited.
+
+\item \textbf{Correlation Term Structure}
+
+It takes market correlation data to initialize, and can return the implied correlation and local correlation between two underlyings.
+\end{itemize}
+
+\subsection{Products}\label{4.2}
+Three different types of instruments are used to price the contract. All products are compatible for both absolute strike and percentage strike. Below are examples under absolute strike.
+
+\begin{itemize}
+\item \textbf{Vanilla European Call/Put Option} with payoff at maturity $T$ of the form
+$$ \xi_{call} = \max \left(S_T-K_S, 0\right)$$
+$$ \xi_{put} = \max \left(K_S-S_T, 0\right)$$
+where $K_S$ is the strike price, and $S_T$ is the stock price at maturity $T$
+
+\item \textbf{Vanilla Caplet/Floorlet} with payoff at maturity $T_2$ of the form
+$$ \xi_{cap} = \max \left(L(T_1, T_1, T_2)-K_r, 0\right)$$
+$$ \xi_{floor} = \max \left(K_r-L(T_1, T_1, T_2), 0\right)$$
+where $K_r$ is the strike rate, and $L(T_1, T_1, T_2)$ is the time-$T_1$ observed LIBOR rate with tenor $T_2-T_1$.
+
+\item \textbf{Hybrid Product} with payoff at maturity $T_2$ of the form
+$$ \xi_{hybrid} = \max \left((S_{T_2}-K_S)(L(T_1, T_1, T_2)-K_r), 0\right) $$
+where $K_S$, $K_r$, $S_{T_2}$, $L(T_1, T_1, T_2)$ is the equity strike price, interest rate strike rate, stock price at time $T_2$, time-$T_1$ observed LIBOR rate with tenor $T_2-T_1$, respectively. This product is a mix of Vanilla European Option and Vanilla Caplet/Floorlet.
+\end{itemize}
+
+\subsection{Stochastic Processes}\label{4.3}
+Each stochastic process is inherited from an abstract base class Stochastic Process which provide two virtual member function drift and diffusion which must be defined in each inherited classes. The general setting is from the following SDE
+$$Y_t=Y_0 + \int_0^t \mu(s,Y_S) \dd s+ \int_0^t \sigma(s,Y_s)\cdot dW_s$$
+
+Here we provide Local Vol Process, GBM Process, Local Vol Quanto Process and GBM Quanto Process for equity, Hull-White Rate Process and Hull-White Rate Forward Process for short-rate under $\mathcal{Q}$ and $\mathcal{Q}^T$, and Equity Quanto Hull-White Rate Hybrid Process and Equity Quanto Hull-White Rate Hybrid Forward Process for the hybrid under $\mathcal{Q}$ and $\mathcal{Q}^T$. The dynamics (drift and diffusion function)has been discussed in \ref{2}.
+
+\subsection{Pricing Engine}\label{4.4}
+
+\subsubsection{Analytical Engine}\label{4.4.1}
+\paragraph{Vanilla European Analytical Engine}
+This engine utilized the classical Black-Scholes formula to price the Vanilla European Option products. The value for a European call option is then
+$$C(K, T, S_0, \sigma, r) = S_0 \mathcal{N}(d_1) - Ke^{-rT}\mathcal{N}(d_1)$$
+where
+$$d_{1,2} = \frac{\log \left( \frac{S_0}{K} \right) + \left(r\pm\frac{\sigma^2}{2} \right)T}{\sigma\sqrt{T}}$$
+and $K, S_0, T, \sigma $ and $\mathcal{N}$ denote respectively the strike price, equity spot price, time to maturity, corresponding implied volatility and the cumulative density function of normal distribution.
+
+Note that the formula for an European put option $P(K, T, S_0, \sigma, r)$ is similar.
+
+\paragraph{Vanilla Rate Hull-White Analytical Engine}
+This engine utilized the Hull-White Model to price zero coupon bond, options on bond and caplet/floorlet. We use directly the notation in section \ref{2.1} and \ref{3.2}.
+
+For this model, the time-$t$ value of the zero coupon bond with maturity $T$ has a affine term structure as:
+$$B(t,T) = e^{M(t,T) - N(t,T)r(t)}$$
+where
+$$
+\left\{
+\begin{array}{ll}
+  N(t,T) &= \frac{1}{\alpha} \left(1-e^{-\alpha(T-t)} \right)\\
+  M(t,T) &= \int_t^T \left( \frac{1}{2}\sigma^2 N^2(s,T)-\theta(s)B(s,T) \right) \dd s\\
+\end{array}
+\right.
+$$
+
+The call option with maturity $T_1$ on a bond with maturity $T_2 \geq T_1$ has the price
+$$c(T_1, T_2, K) = B(0, T_1) BS^P \left(K, T_1, \frac{B(0, T_2)}{B(0, T_1)}, \sigma_B, 0 \right)$$
+where
+$$\sigma_B = \frac{\sqrt{T_1}}{\alpha}\left(1-e^{-\alpha(T_2-T_1)}\right)\sqrt{\frac{\sigma^2}{2\alpha}(1-e^{-2\alpha T_1})}$$
+Note that the put option $p(T_1, T_2, K)$ on bond has similar formula.
+
+The caplet is equivalent to a put option on bond
+$$Caplet(T_1, T_2, K) = \frac{1+K(T_2-T_1)}{T_2-T_1}B(0, T_1)p(T_1, T_2, K_B)$$
+where $K_B=\frac{1}{1+K(T_2-T_1)}$.
+
+The floorlet is then equivalent to a call option on bond with similar formula.
+
+\subsubsection{Monte Carlo Engine}\label{4.4.2}
+Five types of Monte Carlo Engines have been used to price the Vanilla European Option, the Caplet/Floorlet, and the Hybrid Product. There will be two engines corresponding to both Caplet/Floorlet and Hybrid Product, paralleling to the domestic risk neutral measure $\mathbb{Q}$ and $T$-forward measure $\mathbb{Q}^T$
+
+We simulate $N = 1,000,000$ paths for each product type with 252 steps per year, with time interval $\Delta t$ of 1 day. Then we calculate the discounted payoff for all the paths and take the average as the prices. We also use antithetic variables to reduce variance, i.e. reverse $dW_{t_i,k}$ in the first 500,000 paths to $-dW_{t_i,k}$ in the second 500,000 paths.
+
+\paragraph{Vanilla European Monte Carlo Engine}
+The Vanilla European Monte Carlo Engine is implemented to price the Vanilla European Options. For each $t_i$ where $0 = t_0 < t_i < t_n := T$, denote $t_{i+1} = t_i+ \Delta t$, and for each path $k \in \mathbb{Z}$, we simulate $\Delta W_{t_i,k}\sim \sqrt{\Delta t} \mathcal{N}(0,1)$ and use the dynamics that are uniquely determined by a given Stochastic Process class discussed in \ref{4.3} to generate paths for equity. After that, the payoff of each path can be calculated with the payoff function within the given Product class discussed in \ref{4.2}. For instance, for a vanilla call option, we have
+$$\xi_{call,k} = \max \left(S_{t_n}-K_s, 0\right)$$
+
+The discounted payoff can then be calculated as
+$$C_{k} = e^{-rT}\xi_{call, k}$$
+where $r$ is the explicitly given by a rate class discussed in \ref{4.1}.
+
+Finally the Monte Carlo price can then be derived by averaging the payoff for all paths.
+$$C_{MC} = \frac{1}{N}\sum_{k=1}^{N}C_k$$
+
+\paragraph{Vanilla Rate Hull-White Semi Monte Carlo Engine}
+Vanilla Rate Hull-White Semi Monte Carlo Engine and Vanilla Rate Hull-White Forward Semi Monte Carlo Engine are two different engines for caplet/floorlet pricing. It is similar with the previous one whereas the payoff on each path, for example for a caplet, is
+$$\xi_{caplet,k} = \max \left( L(T_1, T_1, T_2)-K_r, 0\right)$$
+where
+$$L(t, t, T) = \frac{1-B(t,T)}{T-t}B(t,T)$$
+
+For Vanilla Rate Hull-White Semi Monte Carlo Engine, the discounted payoff is then
+$$Caplet_k = e^{-\sum_{i=0}^n r_{t_i,k} \Delta t}\xi_{Caplet,k}$$
+whereas for Vanilla Rate Hull-White Forward Semi Monte Carlo Engine
+$$Caplet_k = B(0, T_2)\xi_{Caplet,k}$$
+
+Finally the price leads to
+$Caplet_{MC} = \frac{1}{N}\sum_{k=1}^{N}Caplet_k$
+
+\paragraph{Hybrid Monte Carlo Engine}
+Hybrid Monte Carlo Engine and Hybrid Monte Carlo Forward Engine use the two Monte Carlo Engines mentioned above to price the hybrid products by simulating $S_{t,k}, r_{t,k}$. The payoff (in absolute form) is 
+$$\xi_{hybrid,k} = max \left((S_{T_2 }-K_s)(L(T_1, T_1, T_2)-K_r),0 \right)$$
+
+The discounted hybrid payoff in Hybrid Monte Carlo Engine is then
+$$C_{hybrid,k} = e^{-\sum_{i=0}^n r_{t_n,k}\Delta t}\xi_{hybrid,k}$$
+whereas with Hybrid Monte Carlo Forward Engine as
+$$C_{hybrid,k} = B(0, T_2)\Delta t \xi_{hybrid,k}$$
+
+The final price leads to
+$$C_{MC,hybrid} = \frac{1}{N}\sum_{k=1}^{N}C_{hybrid,k}$$
+
+\section{Extension: Uncertain Correlation Model}\label{5}
+\subsection{Problem Formulation}\label{5.2}
+
+Consider the following stochastic control problem
+$$u(0, S_0, r_0) = \sup_{[0,T_2]} {\E} ^\mathbb{Q} \left[ d(0,T_2)\left(\left(\frac{S(T_2)}{S(0)} - k\right) \left(\frac{L(T_1,T_1,T_2)}{L(0,T_1,T_2)} - k^\prime\right) \right)^+ \right]$$
+
+where $S$ and $r$ follow the dynamics under $\mathbb{Q}$ mentioned in \ref{2.4.1}
+$$
+\left\{
+\begin{array}{ll}
+    \dd S_t & = \left( r_t^f - \rho_X \sigma_X \sigma(t,S_t) \right) S_t \dd t + \sigma(t,S_t) S_t \dd W_t^1\\
+    \dd r_t & = \left(\theta(t)-\alpha r_t \right) \dd t + \sigma \dd W_t^2\\
+\end{array}
+\right.
+$$
+where $W^2$ and $W^1$ are two correlated Brownian motion with correlation parameter $\rho$:
+$$\dd W_t^1 \dd W_t^2 = \rho \dd t$$
+
+Here the control is on correlation parameter $\rho$, and the control constraint set $\Omega := [\rho_{min}, \rho_{max}]$.
+
+Recall that
+$$
+\begin{array}{ll}
+& \mathbb{E}^\mathbb{Q}\left[d(0,T_2)\left(\left(\frac{S(T_2)}{S(0)}-k\right)\left(\frac{L(T_1,T_1,T_2)}{L(0,T_1,T_2)}-k^\prime\right)\right)^+   \right] \\
+=& \mathbb{E}^\mathbb{Q}\left[d(0,T_1) \mathbb{E}^\mathbb{Q}\left[d(T_1,T_2)\left(\left(\frac{S(T_2)}{S(0)}-k\right)\left(\frac{L(T_1,T_1,T_2)}{L(0,T_1,T_2)}-k^\prime\right)\right)^+\mid\mathcal{F}_{T_1}   \right]   \right]\\
+=&  \mathbb{E}^\mathbb{Q}\left[d(0,T_1) \mathbb{E}^\mathbb{Q}\left[d(T_1,T_2)\left(\frac{S(T_2)}{S(0)}-k\right)^+\left(\frac{L(T_1,T_1,T_2)}{L(0,T_1,T_2)}-k^\prime\right)^+ + \left(\frac{S(T_2)}{S(0)}-k\right)^-\left(\frac{L(T_1,T_1,T_2)}{L(0,T_1,T_2)}-k^\prime\right)^- \mid\mathcal{F}_{T_1}  \right]   \right]\\
+=&  \mathbb{E}^\mathbb{Q}\left[d(0,T_1) \left[\left(\frac{L(T_1,T_1,T_2)}{L(0,T_1,T_2)}-k^\prime\right)^+\mathbb{E}^\mathbb{Q}\left[d(T_1,T_2)\left(\frac{S(T_2)}{S(0)}-k\right)^+\mid\mathcal{F}_{T_1}\right] \right.\right.\\
+&+ \left.\left.\left(\frac{L(T_1,T_1,T_2)}{L(0,T_1,T_2)}-k^\prime\right)^-\mathbb{E}^\mathbb{Q} \left[d(T_1,T_2)\left(\frac{S(T_2)}{S(0)}-k\right)^-\mid\mathcal{F}_{T_1}\right] \right]\right]
+\end{array}
+$$
+
+We can then define a function $g(\cdot, \cdot)$ as follow to equate the conditional part above, thanks to the Markovian property:
+$$g(s, r) = g^+(s, r) + g^-(s, r)$$
+where
+$$
+\left\{
+\begin{array}{ll}
+g^+(s, r) & =  \left(\frac{L(T_1,T_1,T_2)}{L(0,T_1,T_2)}-k^\prime\right)^+ h^+(s, r)\\
+g^-(s, r) & = \left(\frac{L(T_1,T_1,T_2)}{L(0,T_1,T_2)}-k^\prime\right)^- h^-(s, r)
+\end{array}
+\right.
+$$
+and
+$$
+\left\{
+\begin{array}{ll}
+h^+(s, r) & =  \mathbb{E}^\mathbb{Q} \left[d(T_1,T_2) \left(\frac{S(T_2)}{S(0)}-k\right)^+ \mid \mathcal{F}_{T_1} \right]\\
+h^-(s, r) & = \mathbb{E}^\mathbb{Q} \left[d(T_1,T_2)\left(\frac{S(T_2)}{S(0)}-k\right)^-\mid\mathcal{F}_{T_1}\right]
+\end{array}
+\right.
+$$
+
+After this trick, we can write explicitly the control problem as
+$$
+\begin{array}{ll}
+u(0, S_0, r_0) & = \sup_{[0,T_2]} {\E} ^\mathbb{Q} \left[ d(0,T_2)\left(\left(\frac{S(T_2)}{S(0)} - k\right) \left(\frac{L(T_1,T_1,T_2)}{L(0,T_1,T_2)} - k^\prime\right) \right)^+ \right]\\
+& =  \sup_{[0,T_1]} \mathbb{E}^\mathbb{Q}\left[d(0,T_1) \sup_{[T_1,T_2]} \left[g(r_{T_1},S_{T_1}) \right]\right]
+\end{array}
+$$
+
+Then observe that
+$$
+\left\{
+\begin{array}{ll}
+h^+(s, r) & = B(T_1, T_2) \mathbb{E}^{\mathbb{Q}^T} \left[\left(\frac{S(T_2)}{S(0)}-k\right)^+ \mid \mathcal{F}_{T_1} \right]\\
+h^-(s, r) & = B(T_1, T_2) \mathbb{E}^{\mathbb{Q}^T} \left[\left(\frac{S(T_2)}{S(0)}-k\right)^- \mid \mathcal{F}_{T_1} \right]
+\end{array}
+\right.
+$$
+and thus we can deduce that
+$$\pdv{h^+(s, r)}{\rho} = \pdv{h^-(s, r)}{\rho} < 0$$
+
+Therefore, the internal control can be solved by just imposing the lowest correlation $\rho_{min} \in \Omega$, and the problem becomes
+$$u(0, S_0, r_0) = \sup_{[0,T_1]} \mathbb{E}^\mathbb{Q}\left[d(0,T_1) g^*(r_{T_1},S_{T_1}) \right]$$
+where $g^*(\cdot, \cdot)$ the corresponding optimal value function thereafter, which is a classical stochastic control problem and can be solved numerically.
+
+\subsection{HJB PDE}\label{5.3}
+We can write down the HJB equation for this problem as
+$$
+\left\{
+\begin{array}{ll}
+& \partial_tu(t,s,r) + \sup_{\rho\in \Omega} \left\{\alpha_s(t,s)u_s +\alpha_r(t,r)u_r +\frac{1}{2}\sigma_s(t,s)^2u_{ss} +\frac{1}{2}\sigma_r(t,s)^2u_{rr} +\sigma_s(t,s)\sigma_r(t,r)u_{rs}\rho - ru(t,s,r)    \right\} =0 \\
+& u(T_1,s,r)=g(s,r)
+\end{array}
+\right.
+$$
+where we have used the notation
+$$
+\left\{
+\begin{array}{ll}
+\alpha_s(t,s) & = \left( r^f - \rho_X \sigma_X \sigma(t,s) \right) s\\
+\sigma_s(t,s) & = \sigma(t,s) s\\
+\alpha_r(t,r) & = \theta(t)-\alpha r\\
+\sigma_r(t,r) & = \sigma
+\end{array}
+\right.
+$$
+
+We see that just the $\sigma_s(t,s)\sigma_r(t,r)u_{rs}\rho$ part in the supreme in the HJB PDE relates to the control $\rho$, and both $\sigma_s(t,s)$ and $\sigma_r(t,r)$ are greater to zero. Therefore, the control will be a bang-bang type in the range $[\rho_{min}, \rho_{max}]$. We define the function
+$$
+\sup_{\rho} \left\{ u_{rs} \rho \right\} = \Sigma(u_{rs}) := 
+\left\{
+\begin{array}{ll}
+\rho_{min} & \text{if } u_{rs} \leq 0\\
+\rho_{max} & \text{if } u_{rs} > 0
+\end{array}
+\right.
+$$
+and the HJB equation becomes
+$$
+\left\{
+\begin{array}{ll}
+& \partial_tu(t,s,r) + \alpha_s(t,s)u_s +\alpha_r(t,r)u_r +\frac{1}{2}\sigma_s(t,s)^2u_{ss} +\frac{1}{2}\sigma_r(t,s)^2u_{rr} +\sigma_s(t,s)\sigma_r(t,r)u_{rs} \Sigma(u_{rs}) - ru(t,s,r) =0 \\
+& u(T_1,s,r)=g(s,r)
+\end{array}
+\right.
+$$
+
+\subsection{Probabilistic Representation}\label{5.4}
+According to the Pardoux-Peng Theorem, this PDE has a corresponding probabilistic representation as a second order nonlinear backward stochastic differential equation, in short, 2-BSDE, as follow:
+$$
+\left\{
+\begin{array}{ll}
+\dd Y_t & = -f(t, X_t, Y_t, Z_t, \Gamma_t) \dd t + Z_t \circ \sigma(t, X_t) \dd W_t\\
+\dd Z_t & = \alpha_t \dd t + \Gamma_t \sigma(t, X_t) \dd W_t
+\end{array}
+\right.
+$$
+where $Y_{T_1} = g(X_{T_1})$ and $X_{T_1} = \begin{pmatrix} S_{T_1} & r_{T_1} \end{pmatrix}^\top$. The use of the Stratonovich product $\circ$ is only for convenience and can be replaced by an Ito integral
+$$\dd Y_t  = \left( -f(t, X_t, Y_t, Z_t, \Gamma_t) + \frac{1}{2} tr \left[\sigma(t,X_t)\sigma(t,X_t)^\top \Gamma_{t} \right] \right) \dd t + Z_t \cdot \sigma(t, X_t) \dd W_t$$
+Here the $f(\cdot, \cdot, \cdot, \cdot, \cdot)$ function represents
+$$f(t, X_t,Y_t,Z_t,\Gamma_t) = \begin{pmatrix}\alpha_S(t, S_t) \\ \alpha_r(t,r_t) \end{pmatrix} \cdot \begin{pmatrix} Z_t^1\\ Z_t^2 \end{pmatrix} - \frac{1}{2} \begin{pmatrix}\hat{\sigma}_S^2S_t^2 & \hat{\sigma}_S \hat{\sigma}_r \rho S_t r_t \\ \hat{\sigma}_S \hat{\sigma}_r \Sigma(\Gamma_t^{12}) S_t r_t & \hat{\sigma}_r^2(1-\Sigma(\Gamma_t^{12})^2) r_t^2 \end{pmatrix} \begin{pmatrix}\Gamma_t^{11}& \Gamma_t^{12} \\ \Gamma_t^{21} & \Gamma_t^{22} \end{pmatrix}$$
+and the process $X_t = \begin{pmatrix} S_t & r_t \end{pmatrix}^\top$ follows the dynamics
+$$
+\left\{
+\begin{array}{ll}
+\dd S_t & = \hat\sigma_S S_t \dd W_t^1\\
+\dd r_t & = \hat\sigma_r r_t \dd W_t^2\\
+\dd W_t^1 \dd W_t^2 & = \hat\rho \dd t
+\end{array}
+\right.
+$$
+with arbitrary but plausible volatility $\hat\sigma_S$ and $\hat\sigma_r$, and correlation $\hat\rho$.
+
+Here $Y_t$ represents the hybrid product price, $Z_t$ its delta and $\Gamma_t$ the option gamma matrix.
+
+We then discretize this 2-BSDE and get the following algorithm to solve this equation
+$$
+\left\{
+\begin{array}{ll}
+Y_{t_n} & = g(S_{t_n},r_{t_n})\\
+\begin{pmatrix}Z_{t_n}^1\\Z_{t_n}^2\end{pmatrix} & = Dg(S_{t_n},r_{t_n})\\
+Y_{t_{i-1}} & = \mathbb{E}_{i-1}[Y_{t_i}]+\left(f(t_{i-1},X_{t_{i-1}},Y_{t_{i-1}},Z_{t_{i-1}},\Gamma_{t_{i-1}})-\frac{1}{2}tr \left[\sigma(t_{i-1},X_{t_{i-1}})\sigma(t_{i-1},X_{t_{i-1}})^T\Gamma_{t_{i-1}} \right]\right)\Delta t\\
+\begin{pmatrix}Z_{t_{i-1}}^1\\Z_{t_{i-1}}^2\end{pmatrix} &= \frac{1}{\Delta_{t_i}}\sigma(t_{i-1},X_{t_{i-1}})^{T^{-1}} \mathbb{E}_{i-1}\left[Y_{t_i} \cdot \begin{pmatrix}\Delta W_t^1\\ \Delta W_t^2\end{pmatrix} \right]\\
+\begin{pmatrix}\Gamma_{t_{i-1}}^{11}& \Gamma_{t_{i-1}}^{12}\\\Gamma_{t_{i-1}}^{21}&\Gamma_{t_{i-1}}^{22}\end{pmatrix} & = \frac{1}{\Delta_{t_i}} \mathbb{E}_{i-1} \left[\begin{pmatrix}Z_{t_{i-1}}^1\\ Z_{t_{i-1}}^2 \end{pmatrix} \begin{pmatrix}\Delta W_{t_{i-1}}^1 & \Delta W_{t_{i-1}}^2\end{pmatrix} \right]\sigma(t_{i-1}, X_{t_{i-1}})^{-1}
+\end{array}
+\right.
+$$
+
+The conditional expectations can be approximated by some neural networks.
+
+\subsection{Algorithm}\label{5.5}
+\begin{itemize}
+\item Simulate enough paths and use a neural network to approximate the $g^*(\cdot, \cdot)$ function.
+\item Use the discretized 2-BSDE scheme and neural networks to approximate the $Y$, $Z$, and $\Gamma$ for each discretized time step.
+\item Move backward until time 0 and collect the approximation functions for $\Gamma_{12}$ at each time step.
+\item Simulate again enough paths with the help of $\Gamma_{12}$ functions and use $\Sigma(\Gamma_{12})$ as the equity-short-rate correlation for each time step
+\item Compute the discounted payoff on each path and average them to get the worst-case scenario price of this hybrid product. 
+\end{itemize}
+
+\section{Conclusion}\label{6}
+The final price of this hybrid product is 0.0120269 from the code.
+
+
+\section{Future Work and Improvement}\label{7}
+The followings are the future potential improvements given what we have done.
+
+We have assumed that the foreign interest rate $r_f$ is constant throughout since the hybrid price is not sensitive to the foreign interest rate fluctuation. For improvement, we can consider to add a term structure for foreign interest rate, or use stochastic rate model for both domestic rate and foreign rate.
+
+The vol of short-rate $\sigma$ has been assumed to be constant for simplicity, but consequently it cannot price correctly the volatility smile in caps/floors/swaptions market. Here the product will be most sensitive to the at-the-money rate volatility but not so sensitive to the volatilities on the wings, and hence we use this as an input for the rate model. However, it will be better to price the smile using a local volatility model on short-rate.
+
+Both the correlation $\rho$ and $\rho_X$ has been set constant, whereas though the price is not sensitive to the equity-FX correlation $\rho_X$, it is indeed sensitive to the equity-rate correlation $\rho$, which is the reason we have provided the uncertain correlation model in \ref{5}. The uncertain correlation model gives a worst case price for the hybrid, nevertheless in order to price the correlation skew more accurately, we can use a local correlation model for $\rho$, and potentially also for $\rho_X$.
+
+We did not consider the rate-FX correlation as it is almost zero empirically. However for a more accurate pricing procedure, we can add this correlation in the model discussed in \ref{2.4}.
+
+We will consider these improvement directions in the future.
+
+\end{document}
